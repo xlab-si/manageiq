@@ -25,21 +25,21 @@ class PhysicalServerProvisionWorkflow < MiqProvisionConfiguredSystemWorkflow
   end
 
   def allowed_configuration_profiles(_options = {})
-    @allowed_configuration_profiles ||= begin
-      config_profiles = get_customization_scripts
-      config_profiles.each_with_object({}) do |config_profile, hash|
+    pxe_image_id = @values.dig(:src_pxe_image_id, 0)
+    return [] unless pxe_image_id
+
+    templates = PxeImage.find(pxe_image_id).customization_templates
+    templates.each_with_object({}) do |config_profile, hash|
         hash[config_profile.id] = config_profile.name
       end
+  end
+
+  def allowed_pxe_images(_options = {})
+    PxeImage.all.each_with_object({}) do |img, hash|
+      hash[img.id] = img.description
     end
   end
 
   def get_source_and_targets(_refresh = false)
-  end
-
-  private
-
-  def get_customization_scripts
-    ems_ids = PhysicalServer.where(:id => @values[:src_configured_system_ids]).pluck(:ems_id).uniq
-    CustomizationScript.where(:manager_id => ems_ids)
   end
 end

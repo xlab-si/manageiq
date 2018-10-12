@@ -11,7 +11,7 @@ class PhysicalServerProvisionRequest < MiqProvisionConfiguredSystemRequest
   end
 
   def self.request_task_class_from(_attribs)
-    ManageIQ::Providers::Lenovo::PhysicalInfraManager::ProvisionTask
+    ManageIQ::Providers::Redfish::PhysicalInfraManager::ProvisionTask
   end
 
   def event_name(mode)

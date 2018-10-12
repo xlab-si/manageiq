@@ -162,6 +162,15 @@
           :display: :show
           :data_type: :integer
           :notes_display: :show
+        :src_pxe_image_id:
+          :values_from:
+            :method: :allowed_pxe_images
+          :description: PXE Image
+          :required: true
+          :notes:
+          :display: :edit
+          :data_type: :integer
+          :notes_display: :show
         :src_configuration_profile_id:
           :values_from:
             :method: :allowed_configuration_profiles
