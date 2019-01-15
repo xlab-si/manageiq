@@ -20,11 +20,11 @@ class PxeImage < ApplicationRecord
     @corresponding_menu ||= "PxeMenu#{model_suffix}".constantize
   end
 
-  def build_pxe_contents(ks_access_path, ks_device)
+  def build_pxe_contents(kernel_args)
     options = kernel_options.to_s.split(" ")
-    update_pxe_content_option(options, "ks=",       ks_access_path)
-    update_pxe_content_option(options, "ksdevice=", ks_device)
-
+    kernel_args.each do |arg, val|
+      update_pxe_content_option(options, "#{arg.to_s}=", val)
+    end
     options.compact.join(" ").strip
   end
 
@@ -45,11 +45,15 @@ class PxeImage < ApplicationRecord
     filepath = self.class.pxe_server_filepath(pxe_server, mac_address)
 
     if customization_template.kind_of?(CustomizationTemplateKickstart)
-      ks_settings = CustomizationTemplateKickstart.ks_settings_for_pxe_image(pxe_server, self, mac_address)
+      kernel_args = CustomizationTemplateKickstart.ks_settings_for_pxe_image(pxe_server, self, mac_address)
+    elsif customization_template.kind_of?(CustomizationTemplateIgnition)
+      kernel_args = customization_template.kernel_args(
+        pxe_server, self, mac_address
+      )
     else
-      ks_settings = {}
+      kernel_args = {}
     end
-    contents = build_pxe_contents(*ks_settings.values_at(:ks_access_path, :ks_device))
+    contents = build_pxe_contents(kernel_args)
 
     pxe_server.write_file(filepath, contents)
   end

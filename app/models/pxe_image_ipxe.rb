@@ -1,5 +1,5 @@
 class PxeImageIpxe < PxeImage
-  def build_pxe_contents(ks_access_path, ks_device)
+  def build_pxe_contents(kernel_args)
     new_kernel  = kernel.to_s.dup
     new_kernel << " #{super}"
 
