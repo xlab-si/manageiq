@@ -46,7 +46,7 @@ class PxeImage < ApplicationRecord
 
     if customization_template.kind_of?(CustomizationTemplateKickstart)
       kernel_args = CustomizationTemplateKickstart.ks_settings_for_pxe_image(pxe_server, self, mac_address)
-    elsif customization_template.kind_of?(CustomizationTemplateIgnition)
+    elsif customization_template.respond_to?(:kernel_args)
       kernel_args = customization_template.kernel_args(
         pxe_server, self, mac_address
       )
